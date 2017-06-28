@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Extensions.DependencyInjection;
+using System;
 using System.Diagnostics;
 using Xamarin.Forms;
 
@@ -8,9 +9,13 @@ namespace Todo
 	{
 		ListView listView;
 
-		public TodoListPageCS()
+        private readonly TodoItemDatabase _db;
+
+        public TodoListPageCS(TodoItemDatabase db)
 		{
-			Title = "Todo";
+            _db = db;
+
+            Title = "Todo";
 
 			var toolbarItem = new ToolbarItem
 			{
@@ -19,10 +24,10 @@ namespace Todo
 			};
 			toolbarItem.Clicked += async (sender, e) =>
 			{
-				await Navigation.PushAsync(new TodoItemPageCS
-				{
-					BindingContext = new TodoItem()
-				});
+
+                var todoPage = ((App)App.Current).ServiceProvider.GetRequiredService<TodoItemPageCS>();
+                todoPage.BindingContext = new TodoItem();
+                await Navigation.PushAsync(todoPage);              
 			};
 			ToolbarItems.Add(toolbarItem);
 
@@ -61,10 +66,10 @@ namespace Todo
 				((App)App.Current).ResumeAtTodoId = (e.SelectedItem as TodoItem).ID;
 				Debug.WriteLine("setting ResumeAtTodoId = " + (e.SelectedItem as TodoItem).ID);
 
-				await Navigation.PushAsync(new TodoItemPageCS
-				{
-					BindingContext = e.SelectedItem as TodoItem
-				});
+                var todoPage = ((App)App.Current).ServiceProvider.GetRequiredService<TodoItemPageCS>();
+                todoPage.BindingContext = e.SelectedItem as TodoItem;
+                await Navigation.PushAsync(todoPage);
+               
 			};
 
 			Content = listView;
@@ -76,7 +81,7 @@ namespace Todo
 
 			// Reset the 'resume' id, since we just want to re-start here
 			((App)App.Current).ResumeAtTodoId = -1;
-			listView.ItemsSource = await App.Database.GetItemsAsync();
+			listView.ItemsSource = await _db.GetItemsAsync();
 		}
 	}
 }

@@ -1,6 +1,6 @@
 ﻿namespace Todo
 {
-	public interface IFileHelper
+    public interface IFileHelper
 	{
 		string GetLocalFilePath(string filename);
 	}

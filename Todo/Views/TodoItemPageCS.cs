@@ -4,9 +4,13 @@ namespace Todo
 {
 	public class TodoItemPageCS : ContentPage
 	{
-		public TodoItemPageCS()
+        private readonly TodoItemDatabase _db;
+
+        public TodoItemPageCS(TodoItemDatabase db)
 		{
-			Title = "Todo Item";
+            _db = db; 
+
+            Title = "Todo Item";
 
 			var nameEntry = new Entry();
 			nameEntry.SetBinding(Entry.TextProperty, "Name");
@@ -21,7 +25,7 @@ namespace Todo
 			saveButton.Clicked += async (sender, e) =>
 			{
 				var todoItem = (TodoItem)BindingContext;
-				await App.Database.SaveItemAsync(todoItem);
+				await _db.SaveItemAsync(todoItem);
 				await Navigation.PopAsync();
 			};
 
@@ -29,7 +33,7 @@ namespace Todo
 			deleteButton.Clicked += async (sender, e) =>
 			{
 				var todoItem = (TodoItem)BindingContext;
-				await App.Database.DeleteItemAsync(todoItem);
+				await _db.DeleteItemAsync(todoItem);
 				await Navigation.PopAsync();
 			};
 

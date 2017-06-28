@@ -7,7 +7,7 @@
 			</ToolbarItem.Icon>
 		</ToolbarItem>
 	</ContentPage.ToolbarItems>
-	<ListView x:Name="listView" Margin="20" ItemSelected="OnListItemSelected">
+	<ListView x:Name="listView" Margin="20" ItemTapped="OnListItemSelected">
 		<ListView.ItemTemplate>
 			<DataTemplate>
 				<ViewCell>
