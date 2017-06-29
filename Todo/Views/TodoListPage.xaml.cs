@@ -45,7 +45,7 @@ namespace Todo
             await Navigation.PushAsync(todoPage);
         }
 
-        async Task OnAddAccount(object sender, EventArgs e)
+        async void OnAddAccount(object sender, EventArgs e)
         {
 
             await _accountService.AddAccount("com.todo.auth_example", "FullAccess");

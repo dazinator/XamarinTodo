@@ -11,7 +11,7 @@ namespace Todo
 {
     public class AndroidAccountService : IAccountService
     {
-        private readonly AccountManager _accountManager;
+
         //  private readonly Activity _activity;
         private Handler _handler;
 
@@ -26,11 +26,12 @@ namespace Todo
 
         public Task AddAccount(string accountType, string authTokenType)
         {
-            
+
             return Task.Run(() =>
              {
-                 Looper.Prepare();
+                 // Looper.Prepare();
                  var activity = _currentTop.Activity;
+                 Handler handler = null;
                  try
                  {
                      if (activity == null)
@@ -38,14 +39,15 @@ namespace Todo
                          throw new Exception("No current activity");
                      }
 
+                   
                      var accountManager = AccountManager.Get(activity);
-                     _handler = new Handler(activity.MainLooper);
+                  
 
-                     var callback = new AccountManagerCallback();
-                     var addOptions = new Bundle();
-                     var handler = new Handler(new HandlerCallback());
+                     //  var callback = new AccountManagerCallback();
+                     //  var addOptions = new Bundle();
+                     //  var handler = new Handler(new HandlerCallback());
 
-                     var future = _accountManager.AddAccount(accountType, authTokenType, null, null, null, null, null);
+                     var future = accountManager.AddAccount(accountType, authTokenType, null, null, null, null, null);
 
                      var bundle = future.Result as Bundle;
                      if (bundle != null)
@@ -54,13 +56,16 @@ namespace Todo
                          activity.StartActivity(intent);
                      }
 
-                    // var result = future.Result;
+                     // var result = future.Result;
                  }
                  catch (Exception e)
                  {
                      if (activity != null)
                      {
-                         ShowMessage(activity.BaseContext, e.Message);
+                         handler = new Handler(activity.MainLooper);                        
+                         ShowMessage(handler, activity.BaseContext, e.Message);
+                         handler.Dispose();
+                         handler = null;
                      }
 
                  }
@@ -68,7 +73,7 @@ namespace Todo
              });
         }
 
-        private void ShowMessage(Context context, String msg)
+        private void ShowMessage(Handler handler, Context context, String msg)
         {
             if (string.IsNullOrWhiteSpace(msg))
             {
@@ -86,7 +91,7 @@ namespace Todo
 
     public class HandlerCallback : Java.Lang.Object, Handler.ICallback
     {
-    
+
         public bool HandleMessage(Message msg)
         {
             throw new NotImplementedException();

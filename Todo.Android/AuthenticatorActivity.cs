@@ -57,7 +57,7 @@ namespace Todo
                 await Submit();
             };
 
-            FindViewById<Button>(Resource.Id.signUp).Click += SignUpButton_Click;
+            FindViewById<TextView>(Resource.Id.signUp).Click += SignUpButton_Click;
 
 
         }
