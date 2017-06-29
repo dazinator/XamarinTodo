@@ -4,9 +4,11 @@ using Android.Content.PM;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Hosting;
 using Todo.FileProvider;
+using Todo.Services;
 
 namespace Todo
 {
+
     [Activity(Label = "Todo", Icon = "@drawable/icon", MainLauncher = true,
         ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation)]
     public class MainActivity :
@@ -28,6 +30,17 @@ namespace Todo
             hostEnv.ContentRootFileProvider = fp;
             hostEnv.ApplicationName = ApplicationInfo.LoadLabel(PackageManager);
             services.AddSingleton<IHostingEnvironment>(hostEnv);
+          
+            // Register a view lifecycle manager with the app, and also in the container.
+            var viewLifecycleManager = new DroidViewLifecycleManager();
+            services.AddSingleton<IDroidViewLifecycleManager>(viewLifecycleManager);
+            var mainApp = MainApp.Current;
+            mainApp.RegisterActivityLifecycleCallbacks(viewLifecycleManager);
+
+            services.AddSingleton<IAndroidCurrentTopActivity, AndroidCurrentTopActivity>();
+
+
+            services.AddTransient<IAccountService, AndroidAccountService>();
 
 
 

@@ -22,8 +22,7 @@ namespace Todo
             // Register services here.
             services.AddEntityFrameworkSqlite();
             
-            services.AddDbContext<TodoItemDatabase>();
-           
+            services.AddDbContext<TodoItemDatabase>();           
 
 
             services.AddTransient<NavigationPage>((a) =>

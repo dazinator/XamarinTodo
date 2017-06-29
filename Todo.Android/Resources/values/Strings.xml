@@ -2,4 +2,10 @@
 <resources>
 	<string name="hello">Hello World, Click Me!</string>
 	<string name="app_name">QuickTodo.Android</string>
+
+  <string name="app_name">AccountAuthenticator</string>
+  <string name="label">Global Connnct</string>
+
+  <string name="signup_title">Create new account</string>
+  <string name="login_label">Log in</string>
 </resources>

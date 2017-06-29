@@ -19,4 +19,7 @@
 			</DataTemplate>
 		</ListView.ItemTemplate>
 	</ListView>
+    <StackLayout>
+        <Button Text="Add Account" Clicked="OnAddAccount" />
+    </StackLayout>
 </ContentPage>
