@@ -15,7 +15,7 @@ namespace Todo
 
         //private AccountManager _accountManager;
 
-        private AuthTokenType _accountType;
+        private string _accountType;
 
         protected override void OnCreate(Bundle savedInstanceState)
         {
@@ -25,9 +25,9 @@ namespace Todo
             AuthTokenType authType;
             if (!Enum.TryParse<AuthTokenType>(authTokenType, out authType))
             {
-                authType = AuthTokenType.FullAccess;
+                authType = AuthTokenType.AccessToken;
             }
-            _accountType = authType;
+            _accountType = AuthContstants.AccountType;
 
 
             SetContentView(Resource.Layout.Register);
@@ -63,7 +63,8 @@ namespace Todo
                     data.PutString(AccountManager.KeyAccountName, userName);
                     data.PutString(AccountManager.KeyAccountType, _accountType.ToString());
                     data.PutString(AccountManager.KeyAuthtoken, authtoken);
-                    data.PutString(AuthenticatorActivity.PARAM_USER_PASS, userPassword);
+
+                   // data.PutString(AuthenticatorActivity.PARAM_USER_PASS, userPassword);
 
                 }
                 catch (Exception e)

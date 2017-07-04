@@ -6,8 +6,11 @@ using Xamarin.Forms;
 
 namespace Todo
 {
+
+
     public partial class TodoListPage : ContentPage
     {
+       
 
         private readonly TodoItemDatabase _db;
         private readonly IAccountService _accountService;
@@ -47,9 +50,17 @@ namespace Todo
 
         async void OnAddAccount(object sender, EventArgs e)
         {
-
-            await _accountService.AddAccount("com.todo.auth_example", "FullAccess");
+            await _accountService.AddAccount(AuthContstants.AccountType, null);
         }
+
+        async void OnSelectAccount(object sender, EventArgs e)
+        {
+            var accountSelect = ((App)App.Current).ServiceProvider.GetRequiredService<AccountSelectPage>();
+            await Navigation.PushAsync(accountSelect);
+            // await _accountService.AddAccount("com.todo.auth_example", null);
+        }
+
+
 
     }
 }

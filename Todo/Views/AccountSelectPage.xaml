@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" x:Class="Todo.AccountSelectPage" Title="Todo">
+	<ContentPage.ToolbarItems>
+		<ToolbarItem Text="+" Clicked="OnAddNewAccount">
+			<ToolbarItem.Icon>
+				<OnPlatform x:TypeArguments="FileImageSource" Android="plus.png" />
+			</ToolbarItem.Icon>
+		</ToolbarItem>
+	</ContentPage.ToolbarItems>
+	<ListView x:Name="listView" Margin="20" ItemTapped="OnListItemSelected">
+		<ListView.ItemTemplate>
+			<DataTemplate>
+				<ViewCell>
+                    <Label Text="{Binding Name}" VerticalTextAlignment="Center" HorizontalOptions="CenterAndExpand" />
+					
+				</ViewCell>
+			</DataTemplate>
+		</ListView.ItemTemplate>
+	</ListView>
+   
+</ContentPage>

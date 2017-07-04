@@ -1,6 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <account-authenticator xmlns:android="http://schemas.android.com/apk/res/android"
                        android:accountType="com.todo.auth_example"
+                       android:customTokens="true"
                        android:icon="@drawable/Icon"
                        android:smallIcon="@drawable/Icon"
                        android:label="@string/label"

@@ -2,8 +2,8 @@
 {
     public enum AuthTokenType
     {
-        FullAccess,
-        ReadOnly
+        AccessToken,
+        RefreshToken,
     }
 }
 

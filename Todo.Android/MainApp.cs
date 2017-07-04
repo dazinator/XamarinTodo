@@ -3,6 +3,8 @@ using Todo.Services;
 using System;
 using Android.Runtime;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
+using Microsoft.AspNetCore.Hosting;
 
 namespace Todo
 {
@@ -22,7 +24,7 @@ namespace Todo
         {
             try
             {
-                base.OnCreate();
+                base.OnCreate();               
 
                 // Application Initialisation ...
                 _current = this;
@@ -38,6 +40,8 @@ namespace Todo
                 throw;
             }
         }    
+              
+        public IServiceProvider ServiceProvider { get; set; }
 
         public static MainApp Current
         {

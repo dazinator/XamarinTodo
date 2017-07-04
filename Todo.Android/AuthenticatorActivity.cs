@@ -7,6 +7,9 @@ using Android.Content;
 using Android.Widget;
 using Android.Runtime;
 using System.Threading.Tasks;
+using Gluon.Client.Jwt;
+using System.Threading;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Todo
 {
@@ -20,13 +23,16 @@ namespace Todo
         public const String ARG_AUTH_TYPE = "AUTH_TYPE";
         public const String ARG_ACCOUNT_NAME = "ACCOUNT_NAME";
         public const String ARG_IS_ADDING_NEW_ACCOUNT = "IS_ADDING_ACCOUNT";
-        public const String PARAM_USER_PASS = "USER_PASS";
+        public const String PARAM_REFRESH_TOKEN = "REFRESH_TOKEN";
         public const String KEY_ERROR_MESSAGE = "ERR_MSG";
 
         private const int REQ_SIGNUP = 1;
 
         private AccountManager _AccountManager;
         private AuthTokenType _AuthType;
+
+
+
 
         protected override void OnCreate(Bundle savedInstanceState)
         {
@@ -35,17 +41,19 @@ namespace Todo
             _AccountManager = AccountManager.Get(BaseContext);
 
 
-            string accountName = Intent.GetStringExtra(ARG_ACCOUNT_NAME);
-            var authType = Intent.GetStringExtra(ARG_AUTH_TYPE);
+          //  var tokenManager = MainApp.Current.ServiceProvider.GetService<ITokenManager>();
 
-            if (!string.IsNullOrWhiteSpace(authType))
-            {
-                _AuthType = (AuthTokenType)Enum.Parse(typeof(AuthTokenType), authType);
-            }
-            else
-            {
-                _AuthType = AuthTokenType.FullAccess;
-            }
+            string accountName = Intent.GetStringExtra(ARG_ACCOUNT_NAME);
+          //  var authType = Intent.GetStringExtra(ARG_AUTH_TYPE);
+
+            //if (!string.IsNullOrWhiteSpace(authType))
+            //{
+            //    _AuthType = (AuthTokenType)Enum.Parse(typeof(AuthTokenType), authType);
+            //}
+            //else
+            //{
+            //    _AuthType = AuthTokenType.AccessToken;
+            //}
 
             if (!string.IsNullOrWhiteSpace(accountName))
             {
@@ -71,7 +79,6 @@ namespace Todo
         {
             Intent intent = new Intent(this.BaseContext, typeof(SignUpActivity));
             intent.PutExtras(Intent.Extras);
-
             StartActivityForResult(intent, REQ_SIGNUP);
 
         }
@@ -91,7 +98,7 @@ namespace Todo
         private void FinishLogin(Intent data)
         {
             var accountName = data.GetStringExtra(AccountManager.KeyAccountName);
-            var accountPassword = data.GetStringExtra(PARAM_USER_PASS);
+            var accountRefreshToken = data.GetStringExtra(PARAM_REFRESH_TOKEN);
             var accountType = data.GetStringExtra(AccountManager.KeyAccountType);
             var account = new Account(accountName, accountType);
 
@@ -101,12 +108,21 @@ namespace Todo
                 var authToken = data.GetStringExtra(AccountManager.KeyAuthtoken);
                 var authtokenType = _AuthType;
 
-                _AccountManager.AddAccountExplicitly(account, accountPassword, null);
-                _AccountManager.SetAuthToken(account, authtokenType.ToString(), authToken);
+                _AccountManager.AddAccountExplicitly(account, null, null);
+                //todo: add refresh auth token..
+                //   _AccountManager.geta
+                _AccountManager.SetPassword(account, accountRefreshToken);
+                _AccountManager.SetAuthToken(account, AuthTokenType.AccessToken.ToString(), authToken);
+               // _AccountManager.SetAuthToken(account, AuthTokenType.RefreshToken.ToString(), accountRefreshToken);             
+               
+
+
             }
             else
             {
-                _AccountManager.SetPassword(account, accountPassword);
+                // just set refresh token.
+                _AccountManager.SetPassword(account, accountRefreshToken);
+                //_AccountManager.SetPassword(account, accountPassword);
             }
 
             SetAccountAuthenticatorResult(data.Extras);
@@ -118,28 +134,41 @@ namespace Todo
         {
             var userName = FindViewById<TextView>(Resource.Id.accountName).Text;
             var userPassword = FindViewById<TextView>(Resource.Id.accountPassword).Text;
-
             var accountType = Intent.GetStringExtra(ARG_ACCOUNT_TYPE);
 
-            var intent = await Task.Run<Intent>(() =>
+            var intent = await Task.Run<Intent>(async () =>
               {
                   String authtoken = null;
                   Bundle data = new Bundle();
                   try
                   {
                       // call server!
+                      var tokenApiClient = MainApp.Current.ServiceProvider.GetRequiredService<ITokenApiClient>();
+
+                      //var serverApi = new TokenApiClient(new Uri("http://localhost:5000"));
+                      var cts = new CancellationTokenSource();
+                      var ct = cts.Token;
+                      var token = await tokenApiClient.GetAccessToken(userName, userPassword, ct);
+
+                      if (token != null)
+                      {
+                          data.PutString(AccountManager.KeyAccountName, userName);
+                          data.PutString(AccountManager.KeyAccountType, accountType);
+                          data.PutString(AccountManager.KeyAuthtoken, token.AccessToken);
+                          data.PutString(PARAM_REFRESH_TOKEN, token.RefreshToken);
+                      }
                       // authtoken = sServerAuthenticate.userSignIn(userName, userPass, mAuthTokenType);
 
-                      data.PutString(AccountManager.KeyAccountName, userName);
-                      data.PutString(AccountManager.KeyAccountType, accountType);
-                      data.PutString(AccountManager.KeyAuthtoken, authtoken);
-                      data.PutString(PARAM_USER_PASS, userPassword);
+
+
+
+                    //  data.PutString(PARAM_USER_PASS, userPassword);
 
                   }
                   catch (Exception e)
                   {
                       data.PutString(KEY_ERROR_MESSAGE, e.Message);
-                      throw;
+                    //  throw;
                   }
 
                   var res = new Intent();

@@ -4,6 +4,7 @@ using Xamarin.Forms.Xaml;
 using System.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
+using Gluon.Client.Jwt;
 
 [assembly: XamlCompilation(XamlCompilationOptions.Compile)]
 namespace Todo
@@ -21,8 +22,8 @@ namespace Todo
         {
             // Register services here.
             services.AddEntityFrameworkSqlite();
-            
-            services.AddDbContext<TodoItemDatabase>();           
+
+            services.AddDbContext<TodoItemDatabase>();
 
 
             services.AddTransient<NavigationPage>((a) =>
@@ -32,10 +33,18 @@ namespace Todo
             });
 
             services.AddTransient<TodoListPage>();
-            services.AddTransient<TodoItemPage>();            
+            services.AddTransient<TodoItemPage>();
             services.AddTransient<TodoItemPageCS>();
             services.AddTransient<TodoListPageCS>();
 
+            var tokenApiClient = new TokenApiClient(new Uri(AuthContstants.TokenApiUrl));
+
+            services.AddSingleton<ITokenApiClient>(tokenApiClient);
+            services.AddSingleton<ITokenManager, TokenManager>();
+
+            services.AddTransient<AccountSelectPage>();
+
+            services.AddMemoryCache();
 
             ServiceProvider = services.BuildServiceProvider();
 
@@ -45,6 +54,8 @@ namespace Todo
                 db.Database.EnsureCreated();
                 db.Database.Migrate();
             }
+
+           
 
             ShowMainPage();
 
@@ -127,6 +138,8 @@ namespace Todo
             //	}
             //}
         }
+
+
     }
 }
 
